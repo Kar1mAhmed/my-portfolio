@@ -44,6 +44,14 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
     if (!grid) return;
 
     const scrollLeft = grid.scrollLeft;
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+
+    // If scrolled to the end (within 15px margin), force active page to totalPages
+    if (maxScroll > 0 && scrollLeft >= maxScroll - 15) {
+      setCurrentPage((prev) => (prev !== totalPages ? totalPages : prev));
+      return;
+    }
+
     const children = Array.from(grid.children) as HTMLElement[];
     if (children.length === 0) return;
 
@@ -62,6 +70,12 @@ export default function ProjectGrid({ projects }: ProjectGridProps) {
   const scrollToPage = (p: number) => {
     const grid = gridRef.current;
     if (!grid) return;
+
+    if (p === totalPages) {
+      grid.scrollTo({ left: grid.scrollWidth, behavior: "smooth" });
+      setCurrentPage(p);
+      return;
+    }
 
     const targetIndex = (p - 1) * itemsPerPage;
     const children = Array.from(grid.children) as HTMLElement[];
