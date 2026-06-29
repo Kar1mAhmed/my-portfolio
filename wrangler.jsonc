@@ -8,7 +8,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "my-portofilo",
+	"name": "my-portfolio",
 	"main": ".open-next/worker.js",
 	"compatibility_date": "2026-06-28",
 	"compatibility_flags": [
