@@ -8,7 +8,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "my-portfolio",
+	"name": "my-portofilo",
 	"main": ".open-next/worker.js",
 	"compatibility_date": "2026-06-28",
 	"compatibility_flags": [
@@ -29,13 +29,25 @@
 			// Self-reference service binding, the service name must match the worker name
 			// see https://opennext.js.org/cloudflare/caching
 			"binding": "WORKER_SELF_REFERENCE",
-			"service": "my-portfolio"
+			"service": "my-portofilo"
 		}
 	],
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"kv_namespaces": [
+		{
+			"binding": "MY_KV",
+			"id": "aafaa86e423841eb8a4a8c4746830738"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "my_bucket",
+			"bucket_name": "my-portfolio"
+		}
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -53,5 +65,9 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
+	"vars": {
+		"ADMIN_USERNAME": "kar1m.ahmed",
+		"ADMIN_PASSWORD": "K@2531933im",
+		"SESSION_SECRET": "c71bfefbc726c8b9d883ea2a233b2099c1581404c0d1c8f18abcfef41b65aa7d"
+	}
 }
