@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	/* config options here */
+  images: {
+    // Disable Next.js image optimization — images are pre-optimized to WebP
+    // on upload via canvas crop and served directly from Cloudflare R2.
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

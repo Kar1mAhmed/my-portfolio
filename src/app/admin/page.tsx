@@ -466,7 +466,8 @@ export default function AdminPage() {
           <div style={{ display: "flex", gap: "1.75rem", alignItems: "center", flexWrap: "wrap" }}>
             <div style={{ position: "relative", width: "100px", height: "100px", borderRadius: "50%", overflow: "hidden", border: "2px solid var(--border-blue)", flexShrink: 0 }}>
               {profile.avatarUrl ? (
-                <Image src={profile.avatarUrl} alt="Avatar" fill style={{ objectFit: "cover" }} />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={{ background: "var(--bg-hover)", width: "100%", height: "100%" }} />
               )}
@@ -636,7 +637,8 @@ export default function AdminPage() {
                       <td style={{ padding: "1rem 1.5rem" }}>
                         <div style={{ position: "relative", width: "64px", aspectRatio: "4/3", borderRadius: "6px", overflow: "hidden", background: "var(--bg-hover)", border: "1px solid var(--border)" }}>
                           {project.coverImageUrl ? (
-                            <Image src={project.coverImageUrl} alt={project.name} fill style={{ objectFit: "cover" }} />
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={project.coverImageUrl} alt={project.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
                             <div style={{ width: "100%", height: "100%" }} />
                           )}
@@ -732,7 +734,8 @@ export default function AdminPage() {
             <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
               <div style={{ position: "relative", width: "120px", aspectRatio: "4/3", borderRadius: "8px", overflow: "hidden", background: "var(--bg-hover)", border: "1px solid var(--border)", flexShrink: 0 }}>
                 {projectForm.coverImageUrl ? (
-                  <Image src={projectForm.coverImageUrl} alt="Project Cover" fill style={{ objectFit: "cover" }} />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={projectForm.coverImageUrl} alt="Project Cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
                   <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-3)", fontSize: "0.6875rem", fontFamily: "var(--font-geist-mono)" }}>No Cover</div>
                 )}

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { Project } from "@/types/project";
 
 interface ProjectCardProps {
@@ -17,12 +16,18 @@ export default function ProjectCard({ project, onClick }: ProjectCardProps) {
     >
       {/* Cover Image Frame */}
       <div className="carousel-img-wrap">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={project.coverImageUrl}
           alt={project.name}
-          fill
-          sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-          priority
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
         />
       </div>
 

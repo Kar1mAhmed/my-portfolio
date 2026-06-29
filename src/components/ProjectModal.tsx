@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import Image from "next/image";
+
 import TechIcon from "./TechIcon";
 import StatusBadge from "./StatusBadge";
 import type { Project } from "@/types/project";
@@ -77,7 +77,8 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
         {/* Cover */}
         <div style={{ position: "relative", aspectRatio: "16/9", background: "var(--bg-hover)", overflow: "hidden" }}>
-          <Image src={project.coverImageUrl} alt={project.name} fill style={{ objectFit: "cover" }} sizes="720px" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={project.coverImageUrl} alt={project.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--bg-card) 0%, transparent 40%)" }} />
         </div>
 

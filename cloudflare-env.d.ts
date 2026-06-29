@@ -4,10 +4,9 @@
 interface __BaseEnv_CloudflareEnv {
 	MY_KV: KVNamespace;
 	my_bucket: R2Bucket;
-	IMAGES: ImagesBinding;
 	ASSETS: Fetcher;
 	NEXTJS_ENV: string;
-	WORKER_SELF_REFERENCE: Fetcher /* my-portofilo */;
+	WORKER_SELF_REFERENCE: Fetcher /* my-portfolio */;
 	ADMIN_USERNAME?: string;
 	ADMIN_PASSWORD?: string;
 	SESSION_SECRET?: string;

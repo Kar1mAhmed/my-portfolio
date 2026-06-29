@@ -2,7 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
@@ -19,13 +19,18 @@ export async function GET(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    const headers = new Headers();
-    object.writeHttpMetadata(headers);
-    headers.set("etag", object.httpEtag);
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    // Read the full buffer — streaming R2 body through NextResponse is unreliable
+    const buffer = await object.arrayBuffer();
+    const contentType = object.httpMetadata?.contentType || "image/webp";
 
-    return new NextResponse(object.body, {
-      headers,
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "ETag": object.httpEtag,
+        "Content-Length": buffer.byteLength.toString(),
+      },
     });
   } catch (error) {
     console.error("GET Image Error:", error);
