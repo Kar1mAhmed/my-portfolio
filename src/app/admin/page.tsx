@@ -236,6 +236,36 @@ export default function AdminPage() {
     }
   };
 
+  // Reorder Project handler
+  const handleMoveProject = async (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    const newProjects = [...projects];
+    const temp = newProjects[index];
+    newProjects[index] = newProjects[targetIndex];
+    newProjects[targetIndex] = temp;
+
+    setProjects(newProjects);
+
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectIds: newProjects.map((p) => p.id) }),
+      });
+      if (!res.ok) {
+        showToast("Failed to save new order", "error");
+        fetchData();
+      } else {
+        showToast("Project order updated!");
+      }
+    } catch {
+      showToast("Network error saving order", "error");
+      fetchData();
+    }
+  };
+
   // Handle R2 Image Upload of Cropped WebP Blob
   const handleUploadImage = async (blob: Blob, target: "avatar" | "cover") => {
     setCropTarget(null);
@@ -616,6 +646,7 @@ export default function AdminPage() {
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.875rem" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border)", color: "var(--text-3)" }}>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem", width: "70px" }}>Order</th>
                   <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Cover</th>
                   <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Name / Status</th>
                   <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Role / Dev Time</th>
@@ -626,13 +657,44 @@ export default function AdminPage() {
               <tbody>
                 {projects.length === 0 ? (
                   <tr>
-                    <td colSpan={5} style={{ padding: "3rem", textAlign: "center", color: "var(--text-3)" }}>
+                    <td colSpan={6} style={{ padding: "3rem", textAlign: "center", color: "var(--text-3)" }}>
                       No projects available. Click "Add New Project" to get started.
                     </td>
                   </tr>
                 ) : (
-                  projects.map((project) => (
+                  projects.map((project, index) => (
                     <tr key={project.id} style={{ borderBottom: "1px solid var(--border)", transition: "background 150ms ease" }} className="table-row-hover">
+                      {/* Order cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "3px", width: "28px" }}>
+                          <button
+                            type="button"
+                            disabled={index === 0}
+                            onClick={() => handleMoveProject(index, "up")}
+                            style={{
+                              background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "4px",
+                              color: index === 0 ? "var(--text-3)" : "var(--text-1)", cursor: index === 0 ? "not-allowed" : "pointer",
+                              padding: "2px 4px", fontSize: "9px", lineHeight: 1, opacity: index === 0 ? 0.25 : 1, display: "flex", alignItems: "center", justifyContent: "center"
+                            }}
+                            title="Move Up"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === projects.length - 1}
+                            onClick={() => handleMoveProject(index, "down")}
+                            style={{
+                              background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "4px",
+                              color: index === projects.length - 1 ? "var(--text-3)" : "var(--text-1)", cursor: index === projects.length - 1 ? "not-allowed" : "pointer",
+                              padding: "2px 4px", fontSize: "9px", lineHeight: 1, opacity: index === projects.length - 1 ? 0.25 : 1, display: "flex", alignItems: "center", justifyContent: "center"
+                            }}
+                            title="Move Down"
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </td>
                       {/* Image cell */}
                       <td style={{ padding: "1rem 1.5rem" }}>
                         <div style={{ position: "relative", width: "64px", aspectRatio: "4/3", borderRadius: "6px", overflow: "hidden", background: "var(--bg-hover)", border: "1px solid var(--border)" }}>

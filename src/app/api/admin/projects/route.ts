@@ -102,3 +102,40 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
   }
 }
+
+// PATCH - Reorder projects
+export async function PATCH(request: Request) {
+  try {
+    const { env } = await getCloudflareContext();
+    if (!(await isAuthorized(env))) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { projectIds } = (await request.json()) as { projectIds: string[] };
+    if (!Array.isArray(projectIds)) {
+      return NextResponse.json({ success: false, error: "projectIds array is required" }, { status: 400 });
+    }
+
+    const currentProjects = await getProjects();
+    const projectMap = new Map(currentProjects.map((p) => [p.id, p]));
+    const reorderedProjects: Project[] = [];
+
+    for (const id of projectIds) {
+      const p = projectMap.get(id);
+      if (p) {
+        reorderedProjects.push(p);
+        projectMap.delete(id);
+      }
+    }
+    for (const p of projectMap.values()) {
+      reorderedProjects.push(p);
+    }
+
+    await saveProjects(reorderedProjects);
+    return NextResponse.json({ success: true, projects: reorderedProjects });
+  } catch (error) {
+    console.error("Reorder Projects Error:", error);
+    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+  }
+}
+
