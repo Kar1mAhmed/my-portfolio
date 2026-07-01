@@ -281,8 +281,21 @@ export default function AdminPage() {
       if (res.ok) {
         const data = (await res.json()) as { url: string };
         if (target === "avatar" && profile) {
-          setProfile({ ...profile, avatarUrl: data.url });
-          showToast("Cropped avatar uploaded successfully!");
+          const updatedProfile = { ...profile, avatarUrl: data.url };
+          setProfile(updatedProfile);
+
+          // Persist the new avatarUrl to KV storage
+          const saveRes = await fetch("/api/admin/profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedProfile),
+          });
+
+          if (saveRes.ok) {
+            showToast("Avatar uploaded and saved successfully!");
+          } else {
+            showToast("Avatar uploaded but failed to save — changes won't persist", "error");
+          }
         } else if (target === "cover") {
           setProjectForm(prev => ({ ...prev, coverImageUrl: data.url }));
           showToast("Cropped project cover uploaded successfully!");
