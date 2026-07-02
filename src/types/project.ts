@@ -14,6 +14,25 @@ export interface Project {
   role: string;
 }
 
+export interface Feedback {
+  id: string;
+  clientName: string;
+  clientRole?: string;
+  clientImageUrl: string;
+  feedback: string;
+  projectName: string;
+  projectUrl?: string;
+}
+
+export interface EducationHighlight {
+  id: string;
+  title: string;
+  subtitle?: string;
+  type: "course" | "book" | "certificate";
+  url?: string;
+  year?: string;
+}
+
 export interface Profile {
   name: string;
   jobTitle: string;

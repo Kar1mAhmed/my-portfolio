@@ -3,7 +3,7 @@
 import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
 import ImageCropper from "@/components/ImageCropper";
-import type { Profile, Project } from "@/types/project";
+import type { Profile, Project, Feedback, EducationHighlight } from "@/types/project";
 
 export default function AdminPage() {
   // Auth state
@@ -16,7 +16,9 @@ export default function AdminPage() {
   // Data state
   const [profile, setProfile] = useState<Profile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [activeTab, setActiveTab] = useState<"profile" | "projects">("profile");
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [educationHighlights, setEducationHighlights] = useState<EducationHighlight[]>([]);
+  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "feedbacks" | "education">("profile");
 
   // Notifications
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -41,8 +43,29 @@ export default function AdminPage() {
   const [techInput, setTechInput] = useState("");
   const [tagInput, setTagInput] = useState("");
 
+  const [editingFeedback, setEditingFeedback] = useState<Feedback | null>(null);
+  const [isAddingFeedback, setIsAddingFeedback] = useState(false);
+  const [feedbackForm, setFeedbackForm] = useState<Partial<Feedback>>({
+    clientName: "",
+    clientRole: "",
+    clientImageUrl: "",
+    feedback: "",
+    projectName: "",
+    projectUrl: "",
+  });
+
+  const [editingHighlight, setEditingHighlight] = useState<EducationHighlight | null>(null);
+  const [isAddingHighlight, setIsAddingHighlight] = useState(false);
+  const [highlightForm, setHighlightForm] = useState<Partial<EducationHighlight>>({
+    title: "",
+    subtitle: "",
+    type: "course",
+    url: "",
+    year: "",
+  });
+
   // Crop state
-  const [cropTarget, setCropTarget] = useState<"avatar" | "cover" | null>(null);
+  const [cropTarget, setCropTarget] = useState<"avatar" | "cover" | "clientImage" | null>(null);
 
   // Trigger Toast Notification
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -71,9 +94,11 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
-      const [profileRes, projectsRes] = await Promise.all([
+      const [profileRes, projectsRes, feedbacksRes, educationRes] = await Promise.all([
         fetch("/api/admin/profile"),
         fetch("/api/admin/projects"),
+        fetch("/api/admin/feedbacks"),
+        fetch("/api/admin/education-highlights"),
       ]);
 
       if (profileRes.ok) {
@@ -84,9 +109,17 @@ export default function AdminPage() {
         const projectsData = (await projectsRes.json()) as Project[];
         setProjects(projectsData);
       }
+      if (feedbacksRes.ok) {
+        const feedbacksData = (await feedbacksRes.json()) as Feedback[];
+        setFeedbacks(feedbacksData);
+      }
+      if (educationRes.ok) {
+        const educationData = (await educationRes.json()) as EducationHighlight[];
+        setEducationHighlights(educationData);
+      }
     } catch (err) {
       console.error("Failed to load admin data:", err);
-      showToast("Error loading profile/projects data", "error");
+      showToast("Error loading dashboard data", "error");
     }
   };
 
@@ -236,6 +269,73 @@ export default function AdminPage() {
     }
   };
 
+  // Open edit / add feedback modal
+  const openFeedbackModal = (feedback?: Feedback) => {
+    if (feedback) {
+      setEditingFeedback(feedback);
+      setFeedbackForm(feedback);
+    } else {
+      setIsAddingFeedback(true);
+      setFeedbackForm({
+        clientName: "",
+        clientRole: "",
+        clientImageUrl: "",
+        feedback: "",
+        projectName: "",
+        projectUrl: "",
+      });
+    }
+  };
+
+  // Save Feedback handler (Add or Update)
+  const handleSaveFeedback = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!feedbackForm.clientName || !feedbackForm.feedback || !feedbackForm.projectName) {
+      showToast("Client name, feedback, and project name are required", "error");
+      return;
+    }
+
+    const isEdit = !!editingFeedback;
+    const url = "/api/admin/feedbacks";
+    const method = isEdit ? "PUT" : "POST";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(feedbackForm),
+      });
+
+      if (res.ok) {
+        showToast(isEdit ? "Feedback updated!" : "Feedback added!");
+        setEditingFeedback(null);
+        setIsAddingFeedback(false);
+        fetchData();
+      } else {
+        showToast("Failed to save feedback", "error");
+      }
+    } catch {
+      showToast("Network error saving feedback", "error");
+    }
+  };
+
+  // Delete Feedback handler
+  const handleDeleteFeedback = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this feedback?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/feedbacks?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast("Feedback deleted");
+        fetchData();
+      } else {
+        showToast("Failed to delete feedback", "error");
+      }
+    } catch {
+      showToast("Network error deleting feedback", "error");
+    }
+  };
+
   // Reorder Project handler
   const handleMoveProject = async (index: number, direction: "up" | "down") => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
@@ -266,11 +366,79 @@ export default function AdminPage() {
     }
   };
 
+  // Open edit / add education highlight modal
+  const openHighlightModal = (highlight?: EducationHighlight) => {
+    if (highlight) {
+      setEditingHighlight(highlight);
+      setHighlightForm(highlight);
+    } else {
+      setIsAddingHighlight(true);
+      setHighlightForm({
+        title: "",
+        subtitle: "",
+        type: "course",
+        url: "",
+        year: "",
+      });
+    }
+  };
+
+  // Save Education Highlight handler (Add or Update)
+  const handleSaveHighlight = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!highlightForm.title || !highlightForm.type) {
+      showToast("Title and Type are required", "error");
+      return;
+    }
+
+    const isEdit = !!editingHighlight;
+    const url = "/api/admin/education-highlights";
+    const method = isEdit ? "PUT" : "POST";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(highlightForm),
+      });
+
+      if (res.ok) {
+        showToast(isEdit ? "Highlight updated!" : "Highlight added!");
+        setEditingHighlight(null);
+        setIsAddingHighlight(false);
+        fetchData();
+      } else {
+        showToast("Failed to save highlight", "error");
+      }
+    } catch {
+      showToast("Network error saving highlight", "error");
+    }
+  };
+
+  // Delete Education Highlight handler
+  const handleDeleteHighlight = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this highlight?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/education-highlights?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast("Highlight deleted");
+        fetchData();
+      } else {
+        showToast("Failed to delete highlight", "error");
+      }
+    } catch {
+      showToast("Network error deleting highlight", "error");
+    }
+  };
+
   // Handle R2 Image Upload of Cropped WebP Blob
-  const handleUploadImage = async (blob: Blob, target: "avatar" | "cover") => {
+  const handleUploadImage = async (blob: Blob, target: "avatar" | "cover" | "clientImage") => {
     setCropTarget(null);
     const formData = new FormData();
-    formData.append("file", blob, target === "avatar" ? "avatar.webp" : "cover.webp");
+    const filename =
+      target === "avatar" ? "avatar.webp" : target === "cover" ? "cover.webp" : "client-image.webp";
+    formData.append("file", blob, filename);
 
     try {
       const res = await fetch("/api/admin/upload", {
@@ -299,6 +467,9 @@ export default function AdminPage() {
         } else if (target === "cover") {
           setProjectForm(prev => ({ ...prev, coverImageUrl: data.url }));
           showToast("Cropped project cover uploaded successfully!");
+        } else if (target === "clientImage") {
+          setFeedbackForm(prev => ({ ...prev, clientImageUrl: data.url }));
+          showToast("Client image uploaded successfully!");
         }
       } else {
         showToast("Failed to upload image", "error");
@@ -482,6 +653,26 @@ export default function AdminPage() {
           }}
         >
           Projects Manager ({projects.length})
+        </button>
+        <button 
+          onClick={() => setActiveTab("feedbacks")}
+          style={{
+            padding: "0.75rem 1.25rem", border: "none", borderBottom: activeTab === "feedbacks" ? "2px solid var(--blue)" : "2px solid transparent",
+            background: "none", cursor: "pointer", color: activeTab === "feedbacks" ? "var(--text-1)" : "var(--text-3)",
+            fontSize: "0.875rem", fontWeight: 500, transition: "all 150ms ease"
+          }}
+        >
+          Feedbacks Manager ({feedbacks.length})
+        </button>
+        <button 
+          onClick={() => setActiveTab("education")}
+          style={{
+            padding: "0.75rem 1.25rem", border: "none", borderBottom: activeTab === "education" ? "2px solid var(--blue)" : "2px solid transparent",
+            background: "none", cursor: "pointer", color: activeTab === "education" ? "var(--text-1)" : "var(--text-3)",
+            fontSize: "0.875rem", fontWeight: 500, transition: "all 150ms ease"
+          }}
+        >
+          Education ({educationHighlights.length})
         </button>
       </div>
 
@@ -778,6 +969,212 @@ export default function AdminPage() {
         </div>
       )}
 
+      {/* TAB 3: FEEDBACKS MANAGER */}
+      {activeTab === "feedbacks" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          
+          {/* Add feedback button */}
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="btn-primary" onClick={() => openFeedbackModal()} style={{ gap: "0.4rem" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add New Feedback
+            </button>
+          </div>
+
+          {/* Feedbacks Table List */}
+          <div style={{ overflowX: "auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.875rem" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border)", color: "var(--text-3)" }}>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Client</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Feedback</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Project</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem", textAlign: "right" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {feedbacks.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} style={{ padding: "3rem", textAlign: "center", color: "var(--text-3)" }}>
+                      No feedbacks available. Click "Add New Feedback" to get started.
+                    </td>
+                  </tr>
+                ) : (
+                  feedbacks.map((feedback) => (
+                    <tr key={feedback.id} style={{ borderBottom: "1px solid var(--border)", transition: "background 150ms ease" }} className="table-row-hover">
+                      {/* Client cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.875rem" }}>
+                          <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "50%", overflow: "hidden", background: "var(--bg-hover)", border: "1px solid var(--border)", flexShrink: 0 }}>
+                            {feedback.clientImageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={feedback.clientImageUrl} alt={feedback.clientName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            ) : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-3)", fontSize: "0.875rem", fontWeight: 600 }}>
+                                {feedback.clientName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
+                            <span style={{ fontWeight: 600, color: "var(--text-1)" }}>{feedback.clientName}</span>
+                            {feedback.clientRole && <span style={{ fontSize: "0.75rem", color: "var(--text-3)" }}>{feedback.clientRole}</span>}
+                          </div>
+                        </div>
+                      </td>
+                      {/* Feedback cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <div style={{ maxWidth: "360px", color: "var(--text-2)", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          “{feedback.feedback}”
+                        </div>
+                      </td>
+                      {/* Project cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        {feedback.projectUrl ? (
+                          <a
+                            href={feedback.projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "var(--blue-light)", textDecoration: "none" }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {feedback.projectName}
+                          </a>
+                        ) : (
+                          <span style={{ color: "var(--text-2)" }}>{feedback.projectName}</span>
+                        )}
+                      </td>
+                      {/* Actions */}
+                      <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
+                        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                          <button className="btn-ghost" onClick={() => openFeedbackModal(feedback)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>
+                            Edit
+                          </button>
+                          <button 
+                            className="btn-ghost" 
+                            onClick={() => handleDeleteFeedback(feedback.id)}
+                            style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem", borderColor: "rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.7)" }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.borderColor = "red";
+                              e.currentTarget.style.color = "red";
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)";
+                              e.currentTarget.style.color = "rgba(239,68,68,0.7)";
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: EDUCATION HIGHLIGHTS */}
+      {activeTab === "education" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          
+          {/* Add highlight button */}
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="btn-primary" onClick={() => openHighlightModal()} style={{ gap: "0.4rem" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Highlight
+            </button>
+          </div>
+
+          {/* Highlights Table List */}
+          <div style={{ overflowX: "auto", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.875rem" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border)", color: "var(--text-3)" }}>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Type</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Title / Subtitle</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem" }}>Year</th>
+                  <th style={{ padding: "1rem 1.5rem", fontWeight: 500, fontFamily: "var(--font-geist-mono)", fontSize: "0.75rem", textAlign: "right" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {educationHighlights.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} style={{ padding: "3rem", textAlign: "center", color: "var(--text-3)" }}>
+                      No highlights available. Click "Add Highlight" to get started.
+                    </td>
+                  </tr>
+                ) : (
+                  educationHighlights.map((highlight) => (
+                    <tr key={highlight.id} style={{ borderBottom: "1px solid var(--border)", transition: "background 150ms ease" }} className="table-row-hover">
+                      {/* Type cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <span className={`badge badge-${highlight.type}`} style={{ textTransform: "capitalize" }}>
+                          {highlight.type}
+                        </span>
+                      </td>
+                      {/* Title / Subtitle cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                          {highlight.url ? (
+                            <a
+                              href={highlight.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ fontWeight: 600, color: "var(--text-1)", textDecoration: "none" }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {highlight.title}
+                            </a>
+                          ) : (
+                            <span style={{ fontWeight: 600, color: "var(--text-1)" }}>{highlight.title}</span>
+                          )}
+                          {highlight.subtitle && <span style={{ fontSize: "0.8125rem", color: "var(--text-3)" }}>{highlight.subtitle}</span>}
+                        </div>
+                      </td>
+                      {/* Year cell */}
+                      <td style={{ padding: "1rem 1.5rem" }}>
+                        <span style={{ fontSize: "0.8125rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>
+                          {highlight.year || "—"}
+                        </span>
+                      </td>
+                      {/* Actions */}
+                      <td style={{ padding: "1rem 1.5rem", textAlign: "right" }}>
+                        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+                          <button className="btn-ghost" onClick={() => openHighlightModal(highlight)} style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>
+                            Edit
+                          </button>
+                          <button 
+                            className="btn-ghost" 
+                            onClick={() => handleDeleteHighlight(highlight.id)}
+                            style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem", borderColor: "rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.7)" }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.borderColor = "red";
+                              e.currentTarget.style.color = "red";
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)";
+                              e.currentTarget.style.color = "rgba(239,68,68,0.7)";
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* PROJECT ADD/EDIT MODAL FORM */}
       {(editingProject || isAddingProject) && (
         <div className="modal-backdrop" style={{ display: "flex" }}>
@@ -995,11 +1392,267 @@ export default function AdminPage() {
         </div>
       )}
 
+      {/* FEEDBACK ADD/EDIT MODAL FORM */}
+      {(editingFeedback || isAddingFeedback) && (
+        <div className="modal-backdrop" style={{ display: "flex" }}>
+          <form 
+            onSubmit={handleSaveFeedback} 
+            className="modal-box" 
+            style={{ maxWidth: "560px", padding: "2rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
+              <h3 className="section-title" style={{ fontSize: "1.25rem" }}>
+                {editingFeedback ? "Edit Feedback" : "Add New Feedback"}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setEditingFeedback(null);
+                  setIsAddingFeedback(false);
+                }} 
+                style={{ background: "none", border: "none", color: "var(--text-3)", cursor: "pointer" }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Client Image Upload Area */}
+            <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
+              <div style={{ position: "relative", width: "80px", height: "80px", borderRadius: "50%", overflow: "hidden", background: "var(--bg-hover)", border: "1px solid var(--border)", flexShrink: 0 }}>
+                {feedbackForm.clientImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={feedbackForm.clientImageUrl} alt="Client" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-3)", fontSize: "0.6875rem", fontFamily: "var(--font-geist-mono)" }}>No Image</div>
+                )}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <button 
+                  type="button" 
+                  className="btn-ghost" 
+                  onClick={() => setCropTarget("clientImage")}
+                  style={{ fontSize: "0.75rem", padding: "0.5rem 1rem" }}
+                >
+                  Crop & Upload Client Image
+                </button>
+                <span style={{ fontSize: "0.6875rem", color: "var(--text-3)" }}>Square crop recommended. Optimized automatically to WebP.</span>
+              </div>
+            </div>
+
+            {/* Inputs Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Client Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={feedbackForm.clientName || ""}
+                  onChange={e => setFeedbackForm({ ...feedbackForm, clientName: e.target.value })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Client Role / Company</label>
+                <input
+                  type="text"
+                  value={feedbackForm.clientRole || ""}
+                  onChange={e => setFeedbackForm({ ...feedbackForm, clientRole: e.target.value })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                  placeholder="e.g. Founder, Acme Inc"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Feedback Quote *</label>
+              <textarea
+                rows={4}
+                required
+                value={feedbackForm.feedback || ""}
+                onChange={e => setFeedbackForm({ ...feedbackForm, feedback: e.target.value })}
+                style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none", resize: "vertical", lineHeight: "1.5" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Project Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={feedbackForm.projectName || ""}
+                  onChange={e => setFeedbackForm({ ...feedbackForm, projectName: e.target.value })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                  placeholder="e.g. Cloud Dashboard"
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Project URL</label>
+                <input
+                  type="url"
+                  value={feedbackForm.projectUrl || ""}
+                  onChange={e => setFeedbackForm({ ...feedbackForm, projectUrl: e.target.value })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: "0.75rem", borderTop: "1px solid var(--border)", paddingTop: "1.25rem", marginTop: "0.5rem" }}>
+              <button 
+                type="button" 
+                className="btn-ghost" 
+                onClick={() => {
+                  setEditingFeedback(null);
+                  setIsAddingFeedback(false);
+                }}
+                style={{ flex: 1, justifyContent: "center" }}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="btn-primary"
+                style={{ flex: 1, justifyContent: "center" }}
+              >
+                {editingFeedback ? "Save Changes" : "Create Feedback"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* EDUCATION HIGHLIGHT ADD/EDIT MODAL FORM */}
+      {(editingHighlight || isAddingHighlight) && (
+        <div className="modal-backdrop" style={{ display: "flex" }}>
+          <form 
+            onSubmit={handleSaveHighlight} 
+            className="modal-box" 
+            style={{ maxWidth: "520px", padding: "2rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
+              <h3 className="section-title" style={{ fontSize: "1.25rem" }}>
+                {editingHighlight ? "Edit Highlight" : "Add Highlight"}
+              </h3>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setEditingHighlight(null);
+                  setIsAddingHighlight(false);
+                }} 
+                style={{ background: "none", border: "none", color: "var(--text-3)", cursor: "pointer" }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Inputs */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Title *</label>
+              <input
+                type="text"
+                required
+                value={highlightForm.title || ""}
+                onChange={e => setHighlightForm({ ...highlightForm, title: e.target.value })}
+                style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                placeholder="e.g. AWS Cloud Practitioner"
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Type *</label>
+                <select
+                  required
+                  value={highlightForm.type || "course"}
+                  onChange={e => setHighlightForm({ ...highlightForm, type: e.target.value as EducationHighlight["type"] })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none", cursor: "pointer" }}
+                >
+                  <option value="course">Course</option>
+                  <option value="book">Book</option>
+                  <option value="certificate">Certificate</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Year</label>
+                <input
+                  type="text"
+                  value={highlightForm.year || ""}
+                  onChange={e => setHighlightForm({ ...highlightForm, year: e.target.value })}
+                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                  placeholder="e.g. 2024"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Subtitle</label>
+              <input
+                type="text"
+                value={highlightForm.subtitle || ""}
+                onChange={e => setHighlightForm({ ...highlightForm, subtitle: e.target.value })}
+                style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                placeholder="e.g. Amazon Web Services, Robert C. Martin, Coursera"
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>URL</label>
+              <input
+                type="url"
+                value={highlightForm.url || ""}
+                onChange={e => setHighlightForm({ ...highlightForm, url: e.target.value })}
+                style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+                placeholder="https://..."
+              />
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: "0.75rem", borderTop: "1px solid var(--border)", paddingTop: "1.25rem", marginTop: "0.5rem" }}>
+              <button 
+                type="button" 
+                className="btn-ghost" 
+                onClick={() => {
+                  setEditingHighlight(null);
+                  setIsAddingHighlight(false);
+                }}
+                style={{ flex: 1, justifyContent: "center" }}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="btn-primary"
+                style={{ flex: 1, justifyContent: "center" }}
+              >
+                {editingHighlight ? "Save Changes" : "Add Highlight"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* POPUP IMAGE CROPPER CONTAINER */}
       {cropTarget && (
         <ImageCropper
-          aspectRatio={cropTarget === "avatar" ? 1 : 1.333} // 1:1 for avatar, 4:3 for project cover
-          title={cropTarget === "avatar" ? "Crop Avatar Image" : "Crop Project Cover Image"}
+          aspectRatio={cropTarget === "cover" ? 1.333 : 1} // 1:1 for avatar/client image, 4:3 for project cover
+          title={
+            cropTarget === "avatar"
+              ? "Crop Avatar Image"
+              : cropTarget === "cover"
+              ? "Crop Project Cover Image"
+              : "Crop Client Image"
+          }
           onCropComplete={(blob) => handleUploadImage(blob, cropTarget)}
           onClose={() => setCropTarget(null)}
         />

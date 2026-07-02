@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import type { Project, Profile } from "@/types/project";
+import type { Project, Profile, Feedback, EducationHighlight } from "@/types/project";
 
 // ─── Mock Data (for local dev / when KV is empty) ───────────────────────────
 
@@ -19,6 +19,65 @@ const MOCK_PROFILE: Profile = {
     x: "https://x.com/karimahmed",
   },
 };
+
+const MOCK_FEEDBACKS: Feedback[] = [
+  {
+    id: "feedback-1",
+    clientName: "Sarah Mitchell",
+    clientRole: "Founder, LaunchPad Studio",
+    clientImageUrl: "/Images/My-Image.jpeg",
+    feedback:
+      "Karim built our landing page and the conversion rate doubled within the first month. He thinks about the business outcome, not just the pixels.",
+    projectName: "LaunchPad Studio",
+    projectUrl: "https://example.com",
+  },
+  {
+    id: "feedback-2",
+    clientName: "Omar Hassan",
+    clientRole: "Product Lead, FinTrack",
+    clientImageUrl: "/Images/My-Image.jpeg",
+    feedback:
+      "Fast, reliable, and genuinely understands product. The dashboard he shipped became the most used feature in our app.",
+    projectName: "FinTrack",
+    projectUrl: "https://example.com",
+  },
+  {
+    id: "feedback-3",
+    clientName: "Emily Chen",
+    clientRole: "CTO, Cloud Dashboard",
+    clientImageUrl: "/Images/My-Image.jpeg",
+    feedback:
+      "Working with Karim felt like having an extra senior engineer on the team. Clean architecture, great communication, and he always hits deadlines.",
+    projectName: "Cloud Dashboard",
+    projectUrl: "https://example.com",
+  },
+];
+
+const MOCK_EDUCATION_HIGHLIGHTS: EducationHighlight[] = [
+  {
+    id: "edu-1",
+    title: "AWS Cloud Practitioner",
+    subtitle: "Amazon Web Services",
+    type: "certificate",
+    url: "https://aws.amazon.com/certification/certified-cloud-practitioner/",
+    year: "2024",
+  },
+  {
+    id: "edu-2",
+    title: "Clean Code",
+    subtitle: "Robert C. Martin",
+    type: "book",
+    year: "2023",
+  },
+  {
+    id: "edu-3",
+    title: "Meta Front-End Developer Professional Certificate",
+    subtitle: "Coursera",
+    type: "course",
+    url: "https://www.coursera.org/professional-certificates/meta-front-end-developer",
+    year: "2023",
+  },
+];
 
 const MOCK_PROJECTS: Project[] = [
   {
@@ -138,6 +197,28 @@ export async function getProjects(): Promise<Project[]> {
   return MOCK_PROJECTS;
 }
 
+export async function getFeedbacks(): Promise<Feedback[]> {
+  try {
+    const { env } = await getCloudflareContext();
+    const raw = await env.MY_KV.get("feedbacks");
+    if (raw) return JSON.parse(raw) as Feedback[];
+  } catch {
+    // Fallback to mock in local dev
+  }
+  return MOCK_FEEDBACKS;
+}
+
+export async function getEducationHighlights(): Promise<EducationHighlight[]> {
+  try {
+    const { env } = await getCloudflareContext();
+    const raw = await env.MY_KV.get("educationHighlights");
+    if (raw) return JSON.parse(raw) as EducationHighlight[];
+  } catch {
+    // Fallback to mock in local dev
+  }
+  return MOCK_EDUCATION_HIGHLIGHTS;
+}
+
 export async function saveProfile(profile: Profile): Promise<boolean> {
   try {
     const { env } = await getCloudflareContext();
@@ -159,6 +240,32 @@ export async function saveProjects(projects: Project[]): Promise<boolean> {
     console.error("Failed to save projects to KV, falling back to memory:", err);
     MOCK_PROJECTS.length = 0;
     MOCK_PROJECTS.push(...projects);
+    return true;
+  }
+}
+
+export async function saveFeedbacks(feedbacks: Feedback[]): Promise<boolean> {
+  try {
+    const { env } = await getCloudflareContext();
+    await env.MY_KV.put("feedbacks", JSON.stringify(feedbacks));
+    return true;
+  } catch (err) {
+    console.error("Failed to save feedbacks to KV, falling back to memory:", err);
+    MOCK_FEEDBACKS.length = 0;
+    MOCK_FEEDBACKS.push(...feedbacks);
+    return true;
+  }
+}
+
+export async function saveEducationHighlights(highlights: EducationHighlight[]): Promise<boolean> {
+  try {
+    const { env } = await getCloudflareContext();
+    await env.MY_KV.put("educationHighlights", JSON.stringify(highlights));
+    return true;
+  } catch (err) {
+    console.error("Failed to save education highlights to KV, falling back to memory:", err);
+    MOCK_EDUCATION_HIGHLIGHTS.length = 0;
+    MOCK_EDUCATION_HIGHLIGHTS.push(...highlights);
     return true;
   }
 }

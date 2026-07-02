@@ -3,6 +3,7 @@
 import Image from "next/image";
 import SocialIcon from "./SocialIcon";
 import type { Profile } from "@/types/project";
+import { useLayoutEffect, useRef, useState } from "react";
 
 interface ProfileSectionProps {
   profile: Profile;
@@ -11,11 +12,38 @@ interface ProfileSectionProps {
 const SKILLS = [
   "Next.js", "React", "TypeScript", "Node.js", "Cloudflare Workers",
   "PostgreSQL", "Tailwind CSS", "REST APIs", "WebSockets", "CI/CD",
-  "Conversion UX", "SEO Optimization", "Speed Optimization", "SaaS",
+  "Conversion UX", "Speed Optimization", "SaaS",
   "Python", "Django", "Celery", "Redis", "SQL", "KV", "S3", "R2", "Docker",
 ];
 
+const MARQUEE_COPIES = 6;
+
 export default function ProfileSection({ profile }: ProfileSectionProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const setRef = useRef<HTMLDivElement>(null);
+  const [ready, setReady] = useState(false);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const setEl = setRef.current;
+      const trackEl = trackRef.current;
+      const innerEl = innerRef.current;
+      if (!setEl || !trackEl || !innerEl) return;
+
+      const setWidth = setEl.scrollWidth;
+      const trackWidth = trackEl.clientWidth;
+      const copiesPerLoop = Math.max(1, Math.ceil(trackWidth / setWidth));
+      // +1px avoids any sub-pixel seam where the loop meets itself
+      innerEl.style.setProperty("--marquee-shift", `${copiesPerLoop * setWidth + 1}px`);
+      setReady(true);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
   return (
     <section style={{ paddingTop: "5rem", paddingBottom: "4rem" }}>
       <div className="spotlight" />
@@ -190,15 +218,35 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
 
       {/* ── Skills marquee ──────────────────────────────────────── */}
       <div style={{ marginTop: "4rem" }}>
-        <div className="marquee-track">
-          <div className="marquee-inner" aria-hidden>
-            {[...SKILLS, ...SKILLS].map((skill, i) => (
-              <span key={`${skill}-${i}`} className="marquee-item">
-                <span className="marquee-dot" />
-                {skill}
-              </span>
-            ))}
+        <div
+          className="marquee-track"
+          ref={trackRef}
+          style={{ opacity: ready ? 1 : 0, transition: "opacity 200ms ease" }}
+        >
+          <div
+            className="marquee-inner"
+            ref={innerRef}
+            aria-hidden
+          >
+            {Array.from({ length: MARQUEE_COPIES }).flatMap((_, copyIndex) =>
+              SKILLS.map((skill, i) => (
+                <span key={`${skill}-${copyIndex}-${i}`} className="marquee-item">
+                  <span className="marquee-dot" />
+                  {skill}
+                </span>
+              ))
+            )}
           </div>
+        </div>
+
+        {/* Hidden measurement copy so the loop distance is exact pixels */}
+        <div ref={setRef} className="marquee-measure" aria-hidden>
+          {SKILLS.map((skill, i) => (
+            <span key={`measure-${skill}-${i}`} className="marquee-item">
+              <span className="marquee-dot" />
+              {skill}
+            </span>
+          ))}
         </div>
       </div>
 
