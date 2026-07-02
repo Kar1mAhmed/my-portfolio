@@ -10,7 +10,7 @@ const MOCK_PROFILE: Profile = {
   location: "Cairo, Egypt",
   email: "hello@karimahmed.dev",
   avatarUrl: "/Images/My-Image.jpeg",
-  resumeUrl: "#",
+  resumeUrl: "/Karim Ahmed — CV.pdf",
   availabilityStatus: "open",
   socials: {
     linkedin: "https://linkedin.com/in/karimahmed",
