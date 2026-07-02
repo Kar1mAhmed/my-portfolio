@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Karim Ahmed — CV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-main:#0d0d0e;
+    --bg-side:#070708;
+    --bg-panel:#131315;
+    --text-primary:#f2f2f0;
+    --text-secondary:#9a9a9e;
+    --text-faint:#5c5c60;
+    --blue:#4c8dff;
+    --blue-dim:#1c2e4f;
+    --blue-deep:#0b1830;
+    --line:#232326;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    background:#000;
+    font-family:'Inter', sans-serif;
+    color:var(--text-primary);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page{
+    width:210mm;
+    min-height:297mm;
+    margin:10mm auto;
+    background:var(--bg-main);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 0 40px rgba(0,0,0,0.6);
+  }
+  .page-1 .body-split{ flex:1; min-height:0; }
+  .page-1 .sidebar{ overflow:hidden; }
+  .page-1 .main{ overflow:hidden; }
+
+  /* ---------- HEADER ---------- */
+  .header-full{
+    display:flex;
+    flex-direction:column;
+    gap:4mm;
+    padding:7mm 12mm 6mm;
+    background:var(--bg-side);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    flex-shrink:0;
+  }
+  .header-full::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:-1px;
+    width:100%; height:2px;
+    background:linear-gradient(90deg, var(--blue) 0%, transparent 55%);
+  }
+  .header-top{
+    display:flex;
+    align-items:center;
+    gap:7mm;
+  }
+  .header-photo{
+    width:24mm; height:24mm;
+    border-radius:50%;
+    overflow:hidden;
+    flex-shrink:0;
+    border:1.5px solid var(--blue-dim);
+    box-shadow:0 0 0 4px var(--bg-side), 0 0 22px rgba(76,141,255,0.15);
+  }
+  .header-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .header-id{ flex:1; }
+  .header-id .name{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:18.5pt;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .header-id .role{
+    margin-top:1.6mm;
+    font-family:'JetBrains Mono', monospace;
+    font-size:8.2pt;
+    color:var(--blue);
+    white-space:nowrap;
+  }
+
+  .header-social{ display:flex; gap:2.2mm; flex-shrink:0; margin-left:auto; }
+  .social-badge{
+    width:20px; height:20px;
+    border-radius:50%;
+    border:1px solid var(--blue-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:6.4pt;
+    font-weight:500;
+    color:var(--blue);
+    text-decoration:none;
+    background:var(--blue-deep);
+  }
+
+  .header-contact-row{
+    display:flex;
+    align-items:center;
+    gap:6mm;
+    padding-top:4mm;
+    border-top:1px solid var(--line);
+  }
+  .h-contact-item{
+    display:flex;
+    align-items:center;
+    gap:2.2mm;
+    font-size:8.4pt;
+    color:var(--text-secondary);
+    white-space:nowrap;
+    line-height:1;
+  }
+  .h-contact-item a{ color:var(--text-secondary); text-decoration:none; }
+  .h-icon{
+    width:12px; height:12px;
+    stroke:var(--blue);
+    fill:none;
+    stroke-width:1.9;
+    flex-shrink:0;
+    display:block;
+  }
+
+  /* ---------- SLIM HEADER (page 2) ---------- */
+  .header-slim{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6mm 12mm;
+    background:var(--bg-side);
+    border-bottom:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace;
+    font-size:7.6pt;
+    color:var(--text-faint);
+  }
+  .header-slim .hs-name{ color:var(--text-secondary); }
+  .header-slim .hs-name b{ color:var(--blue); }
+
+  /* ---------- BODY SPLIT ---------- */
+  .body-split{
+    flex:1;
+    display:flex;
+    min-height:0;
+  }
+
+  .sidebar{
+    width:65mm;
+    background:var(--bg-side);
+    padding:7mm 7.5mm;
+    display:flex;
+    flex-direction:column;
+    gap:4.5mm;
+    border-right:1px solid var(--line);
+  }
+
+  .side-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:7.2pt;
+    color:var(--blue);
+    letter-spacing:0.03em;
+    margin-bottom:2mm;
+    display:block;
+  }
+
+  .side-block{ display:flex; flex-direction:column; }
+
+  .skill-group{ margin-bottom:3mm; }
+  .skill-group .gname{
+    font-size:7.2pt;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:1.5mm;
+  }
+  .pill-row{ display:flex; flex-wrap:wrap; gap:1.3mm; }
+  .pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:6.7pt;
+    color:var(--text-primary);
+    background:var(--blue-deep);
+    border:1px solid var(--blue-dim);
+    border-radius:3px;
+    padding:1.4mm 2mm;
+    white-space:nowrap;
+  }
+
+  .lang-row{ display:flex; justify-content:space-between; font-size:8.3pt; margin-bottom:1.5mm; color:var(--text-secondary); }
+  .lang-row span:first-child{ color:var(--text-primary); }
+
+  .edu-entry{ margin-bottom:2.6mm; }
+  .edu-entry .degree{ font-size:8.4pt; font-weight:600; color:var(--text-primary); line-height:1.35;}
+  .edu-entry .school{ font-size:8pt; color:var(--text-secondary); margin-top:0.5mm; }
+  .edu-entry .meta{ font-family:'JetBrains Mono', monospace; font-size:7.1pt; color:var(--blue); margin-top:0.8mm; }
+
+  .achieve-row{ display:flex; flex-direction:column; gap:1.8mm; }
+  .achieve-row .a-item{ display:flex; gap:2.4mm; font-size:8.2pt; color:var(--text-secondary); line-height:1.4; }
+  .achieve-row .a-item .dot{ color:var(--blue); flex-shrink:0; }
+  .achieve-row .a-item b{ color:var(--text-primary); font-weight:500; }
+
+  .mini-note{ font-size:8.2pt; line-height:1.6; color:var(--text-secondary); }
+  .mini-note b{ color:var(--text-primary); font-weight:500; }
+
+  /* ---------- MAIN ---------- */
+  .main{
+    flex:1;
+    background:var(--bg-panel);
+    padding:8mm 11mm;
+    display:flex;
+    flex-direction:column;
+    gap:5mm;
+  }
+  .main.full{ padding:9mm 13mm; }
+
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:3mm;
+    margin-bottom:3.2mm;
+  }
+  .section-title .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:8.8pt;
+    color:var(--blue);
+  }
+  .section-title .rule{ flex:1; height:1px; background:var(--line); }
+
+  .summary-text{ font-size:9.2pt; line-height:1.68; color:var(--text-secondary); }
+  .summary-text b{ color:var(--text-primary); font-weight:500; }
+
+  .exp-entry{ margin-bottom:4mm; }
+  .exp-head{ display:flex; justify-content:space-between; align-items:baseline; gap:3mm; }
+  .exp-head .role{ font-size:10.2pt; font-weight:600; color:#fff; }
+  .exp-head .date{ font-family:'JetBrains Mono', monospace; font-size:7.4pt; color:var(--text-faint); white-space:nowrap; }
+  .exp-sub{ font-size:8.2pt; color:var(--blue); margin-top:0.7mm; margin-bottom:2.4mm; }
+  .exp-list{ list-style:none; display:flex; flex-direction:column; gap:1.9mm; }
+  .exp-list li{ font-size:8.6pt; line-height:1.55; color:var(--text-secondary); padding-left:3.6mm; position:relative; }
+  .exp-list li::before{ content:""; position:absolute; left:0; top:0.55em; width:3px; height:3px; background:var(--blue); border-radius:50%; }
+  .exp-list li b{ color:var(--text-primary); font-weight:500; }
+  .exp-list li a{ color:var(--text-primary); text-decoration:none; border-bottom:1px dotted var(--blue-dim); }
+
+  .stack-line{ margin-top:2.8mm; font-family:'JetBrains Mono', monospace; font-size:7.2pt; color:var(--text-faint); }
+  .stack-line span{ color:var(--blue); }
+
+  .footer-mark{
+    margin-top:auto;
+    padding-top:4mm;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    font-family:'JetBrains Mono', monospace;
+    font-size:6.6pt;
+    color:var(--text-faint);
+    flex-shrink:0;
+  }
+
+  .proj-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4mm;
+  }
+  .proj-card{
+    background:var(--bg-side);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:4.6mm;
+    display:flex;
+    flex-direction:column;
+    gap:1.3mm;
+  }
+  .proj-card .pname{ font-family:'Space Grotesk', sans-serif; font-size:10pt; font-weight:600; color:#fff; }
+  .proj-card .purl{ font-family:'JetBrains Mono', monospace; font-size:7pt; color:var(--blue); }
+  .proj-card .purl a{ color:var(--blue); text-decoration:none; }
+  .proj-card .pdesc{ font-size:8pt; line-height:1.5; color:var(--text-secondary); margin-top:0.8mm; }
+  .proj-card .ptag{ margin-top:1.4mm; font-family:'JetBrains Mono', monospace; font-size:6.4pt; color:var(--text-faint); }
+
+  @media print{
+    html,body{ background:#000; }
+    .page{
+      margin:0;
+      box-shadow:none;
+      page-break-after:always;
+      break-after:page;
+      width:210mm;
+      height:297mm;
+      min-height:unset;
+      max-height:297mm;
+      overflow:hidden;
+    }
+    @page{ size:A4; margin:0; }
+  }
+
+  @media screen and (max-width:900px){
+    .page{ width:100%; min-height:auto; }
+    .sidebar{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1 ============ -->
+<div class="page page-1">
+
+  <div class="header-full">
+    <div class="header-top">
+      <div class="header-photo">
+        <img src="https://kar1m.com/api/images/2cfa6acd-0112-4f74-a1ab-6a5e889de8a9.webp" alt="Karim Ahmed">
+      </div>
+      <div class="header-id">
+        <div class="name">Karim Ahmed</div>
+        <div class="role">full-stack developer · saas &amp; marketing websites</div>
+      </div>
+    </div>
+
+    <div class="header-contact-row">
+      <div class="h-contact-item">
+        <svg class="h-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1 .36 1.94.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.87.32 1.81.55 2.81.68A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>+20 106 202 4268</span>
+      </div>
+      <div class="h-contact-item">
+        <svg class="h-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 1 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>Cairo, Egypt</span>
+      </div>
+      <div class="h-contact-item">
+        <svg class="h-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" stroke-linejoin="round"/><path d="M22 6l-10 7L2 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a href="mailto:karim.was.in@gmail.com">karim.was.in@gmail.com</a>
+      </div>
+      <div class="header-social">
+        <a class="social-badge" href="https://www.linkedin.com/in/kar1m-ahmed/" title="LinkedIn">in</a>
+        <a class="social-badge" href="https://github.com/Kar1mAhmed" title="GitHub">GH</a>
+        <a class="social-badge" href="https://www.upwork.com/freelancers/karimahmed4" title="Upwork">UW</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="body-split">
+    <div class="sidebar">
+
+      <div class="side-block">
+        <span class="side-label">// skills</span>
+
+        <div class="skill-group">
+          <div class="gname">Backend</div>
+          <div class="pill-row">
+            <span class="pill">Python</span>
+            <span class="pill">Django</span>
+            <span class="pill">FastAPI</span>
+            <span class="pill">Node.js</span>
+            <span class="pill">Celery</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Frontend</div>
+          <div class="pill-row">
+            <span class="pill">Next.js</span>
+            <span class="pill">React</span>
+            <span class="pill">Tailwind</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Databases</div>
+          <div class="pill-row">
+            <span class="pill">PostgreSQL</span>
+            <span class="pill">SQL</span>
+            <span class="pill">Redis</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Infrastructure</div>
+          <div class="pill-row">
+            <span class="pill">CF Workers</span>
+            <span class="pill">D1</span>
+            <span class="pill">KV</span>
+            <span class="pill">R2</span>
+            <span class="pill">AWS S3</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Payments &amp; Email</div>
+          <div class="pill-row">
+            <span class="pill">Stripe</span>
+            <span class="pill">Paymob</span>
+            <span class="pill">Resend</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Engineering</div>
+          <div class="pill-row">
+            <span class="pill">OOP</span>
+            <span class="pill">Design Patterns</span>
+            <span class="pill">Algorithms</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="gname">Marketing Sites</div>
+          <div class="pill-row">
+            <span class="pill">Custom CMS</span>
+            <span class="pill">SEO</span>
+            <span class="pill">CRO</span>
+            <span class="pill">MS Clarity</span>
+            <span class="pill">GA4</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// languages</span>
+        <div class="lang-row"><span>Arabic</span><span>Native</span></div>
+        <div class="lang-row"><span>English</span><span>Fluent</span></div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// how i work</span>
+        <p class="mini-note">
+          I take full responsibility for a project once I'm on it: planning the stack, building it,
+          launching it, and staying involved to track performance after that. Clients don't need to
+          manage the technical side themselves.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="main">
+
+      <div>
+        <div class="section-title"><span class="tag">// summary</span><span class="rule"></span></div>
+        <p class="summary-text">
+          I'm a full-stack developer who builds websites and products that make sales, not just
+          websites that look nice. I've built <b>25+ marketing websites</b> with custom CMS setups,
+          and I've built and owned <b>SaaS platforms and mobile apps</b> from the ground up. I move
+          comfortably across the stack: backend, frontend, infrastructure, and the marketing side,
+          understanding what customers want and turning that into features that convert. Clients trust
+          me to run a project end to end without needing to manage the technical details themselves.
+        </p>
+      </div>
+
+      <div>
+        <div class="section-title"><span class="tag">// experience</span><span class="rule"></span></div>
+
+        <div class="exp-entry">
+          <div class="exp-head">
+            <span class="role">Full-Stack Developer</span>
+            <span class="date">2022 — 2024</span>
+          </div>
+          <div class="exp-sub">Senu Studio</div>
+
+          <ul class="exp-list">
+            <li>Worked as a full-stack developer at Senu Studio, a creative agency building sites for
+                marketing and business clients.</li>
+            <li>Built and shipped <b>25+ marketing websites</b>, most running on custom CMS setups so
+                clients could manage their own content without touching code.</li>
+            <li>Added advanced features tailored to each client: dynamic portfolio systems, lead capture
+                flows, booking systems, and custom admin dashboards.</li>
+            <li>Built <a href="https://senu.studio">senu.studio</a> itself, the agency's own site, which
+                has grown to <b>2M+ visits</b>.</li>
+            <li>Owned each project end to end: frontend, backend, deployment, and SEO, working directly
+                with clients from the first call to launch.</li>
+          </ul>
+
+          <div class="stack-line">stack: <span>Next.js · Django · Tailwind · PostgreSQL · Custom CMS</span></div>
+        </div>
+
+        <div class="exp-entry">
+          <div class="exp-head">
+            <span class="role">Freelance Full-Stack Developer</span>
+            <span class="date">2024 — Present</span>
+          </div>
+          <div class="exp-sub">Independent, remote (Upwork &amp; direct clients)</div>
+
+          <ul class="exp-list">
+            <li>Went independent to work directly with clients on SaaS platforms, mobile apps, and
+                marketing sites, taking full responsibility for each project from planning to launch.</li>
+            <li>Built <a href="https://sceneyard.com">SceneYard</a>, a subscription SaaS platform for
+                motion designers. Planned the stack and built the full product, now at
+                <b>20,000+ signups</b> and <b>300+ indexed pages</b>.</li>
+            <li>Built <a href="https://castform.io">Castform</a>, an AI voice agent SaaS platform, owning
+                the architecture and full-stack development.</li>
+            <li>Built the backend for <a href="https://play.google.com/store/apps/details?id=com.codeman.mystory&amp;pli=1">My Story</a>,
+                a mobile app published on Google Play.</li>
+            <li>Delivered marketing and corporate websites for clients across Egypt, Iraq, and the wider
+                Middle East, including <b>EMAAL Business Space</b>, <b>Aldamen United</b>, and
+                <b>AL SAIF Law Firm</b>, Iraq's oldest law firm.</li>
+            <li>Comfortable taking full ownership of a project: architecture, build, launch, and staying
+                involved afterward to track performance and growth.</li>
+          </ul>
+
+          <div class="stack-line">stack: <span>Next.js · Django · FastAPI · Cloudflare Workers/D1/KV/R2 · PostgreSQL · Stripe</span></div>
+        </div>
+      </div>
+
+      <!-- footer removed from page 1 to prevent overflow -->
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 2 ============ -->
+<div class="page">
+
+  <div class="header-slim">
+    <span class="hs-name"><b>Karim Ahmed</b> · Full-Stack Developer</span>
+    <span>projects &amp; links</span>
+  </div>
+
+  <div class="body-split">
+    <div class="sidebar">
+
+      <div class="side-block">
+        <span class="side-label">// education</span>
+        <div class="edu-entry">
+          <div class="degree">B.Sc. Computer &amp; Information Science</div>
+          <div class="school">Mansoura University</div>
+          <div class="meta">2020 – 2024 · Grade 84%</div>
+        </div>
+        <div class="edu-entry">
+          <div class="degree">Secondary School</div>
+          <div class="school">Egypt</div>
+          <div class="meta">2019 – 2020 · Grade 93%</div>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// upwork</span>
+        <div class="achieve-row">
+          <div class="a-item"><span class="dot">•</span><span><b>Top Rated</b>, 100% Job Success</span></div>
+          <div class="a-item"><span class="dot">•</span><span>4.7 rating, 11 jobs completed</span></div>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// competitions</span>
+        <div class="achieve-row">
+          <div class="a-item"><span class="dot">•</span><span><b>Dell Hack Trick</b>, ranked 5th nationally</span></div>
+          <div class="a-item"><span class="dot">•</span><span><b>ICPC / ECPC</b>, 2nd place, university round</span></div>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// volunteering</span>
+        <div class="achieve-row">
+          <div class="a-item"><span class="dot">•</span><span>Data Science member, <b>CIS Team</b></span></div>
+          <div class="a-item"><span class="dot">•</span><span>PR member, <b>ICPC Team</b></span></div>
+          <div class="a-item"><span class="dot">•</span><span>Data Science &amp; PR member, <b>CAT Reloaded</b></span></div>
+        </div>
+      </div>
+
+      <div class="side-block">
+        <span class="side-label">// what i handle</span>
+        <p class="mini-note">
+          Architecture, full-stack build, payments, email infrastructure, SEO, and conversion.
+          I also track performance after launch with <b>Microsoft Clarity</b> and
+          <b>Google Analytics</b>.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="main">
+
+      <div>
+        <div class="section-title"><span class="tag">// selected projects</span><span class="rule"></span></div>
+
+        <div class="proj-grid">
+
+          <div class="proj-card">
+            <div class="pname">SceneYard</div>
+            <div class="purl"><a href="https://sceneyard.com">sceneyard.com</a></div>
+            <div class="pdesc">SaaS subscription platform for motion designers. Full-stack build with
+              payments, email infrastructure, and SEO. 20,000+ signups, 300+ indexed pages.</div>
+            <div class="ptag">role: planned &amp; built end to end</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">Castform</div>
+            <div class="purl"><a href="https://castform.io">castform.io</a></div>
+            <div class="pdesc">AI voice agent SaaS platform. Owned the architecture and built the product
+              across the full stack.</div>
+            <div class="ptag">role: planned &amp; built end to end</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">My Story</div>
+            <div class="purl"><a href="https://play.google.com/store/apps/details?id=com.codeman.mystory&amp;pli=1">Google Play</a></div>
+            <div class="pdesc">Mobile app published on Google Play. Built the backend that powers it.</div>
+            <div class="ptag">role: backend developer</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">Senu Studio</div>
+            <div class="purl"><a href="https://senu.studio">senu.studio</a></div>
+            <div class="pdesc">Creative agency site with 2M+ visits. Dynamic portfolio system, lead
+              generation, and conversion-focused pages.</div>
+            <div class="ptag">role: full-stack developer</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">EMAAL Business Space</div>
+            <div class="purl"><a href="https://www.emaalbs.com">emaalbs.com</a></div>
+            <div class="pdesc">Corporate site for a leading Iraqi business group, with a custom no-code
+              dashboard to manage blog content and events like the Iraq Business Summit.</div>
+            <div class="ptag">role: full-stack developer</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">Aldamen United</div>
+            <div class="purl"><a href="https://damenunited.com">damenunited.com</a></div>
+            <div class="pdesc">Premium corporate site for a major Middle Eastern investment and development
+              firm, with multi-country operations and a multi-million dollar project portfolio.</div>
+            <div class="ptag">role: full-stack developer</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">AL SAIF Law Firm</div>
+            <div class="purl"><a href="https://www.saiflaw.com">saiflaw.com</a></div>
+            <div class="pdesc">Site for Iraq's oldest law firm, 46+ years in business and 1,000+ companies
+              served. Dynamic news, legal calculators, and a free consultation booking flow.</div>
+            <div class="ptag">role: full-stack developer</div>
+          </div>
+
+          <div class="proj-card">
+            <div class="pname">SherHub</div>
+            <div class="purl"><a href="https://sherhub.com">sherhub.com</a></div>
+            <div class="pdesc">Conversion-focused frontend, built for clean UI, speed, SEO, and a clear
+              user journey from landing to action.</div>
+            <div class="ptag">role: full-stack developer</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title"><span class="tag">// links</span><span class="rule"></span></div>
+        <p class="mini-note">
+          More projects and full case studies are available on request, or through my
+          <a href="https://www.upwork.com/freelancers/karimahmed4" style="color:var(--text-primary); border-bottom:1px dotted var(--blue-dim); text-decoration:none;">Upwork profile</a>,
+          <a href="https://github.com/Kar1mAhmed" style="color:var(--text-primary); border-bottom:1px dotted var(--blue-dim); text-decoration:none;">GitHub</a>,
+          or <a href="https://www.linkedin.com/in/kar1m-ahmed/" style="color:var(--text-primary); border-bottom:1px dotted var(--blue-dim); text-decoration:none;">LinkedIn</a>.
+        </p>
+      </div>
+
+      <div class="footer-mark">
+        <span>karim ahmed — cv</span>
+        <span>page 2 / 2</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

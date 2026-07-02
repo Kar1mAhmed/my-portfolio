@@ -11,9 +11,8 @@ interface ProfileSectionProps {
 const SKILLS = [
   "Next.js", "React", "TypeScript", "Node.js", "Cloudflare Workers",
   "PostgreSQL", "Tailwind CSS", "REST APIs", "WebSockets", "CI/CD",
-  "Conversion UX", "SEO Optimization", "Speed Optimization", "SaaS Marketing",
-  "Next.js", "React", "TypeScript", "Node.js", "Cloudflare Workers",
-  "PostgreSQL", "Tailwind CSS", "REST APIs", "WebSockets", "CI/CD",
+  "Conversion UX", "SEO Optimization", "Speed Optimization", "SaaS",
+  "Python", "Django", "Celery", "Redis", "SQL", "KV", "S3", "R2", "Docker",
 ];
 
 export default function ProfileSection({ profile }: ProfileSectionProps) {
@@ -193,8 +192,8 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
       <div style={{ marginTop: "4rem" }}>
         <div className="marquee-track">
           <div className="marquee-inner" aria-hidden>
-            {SKILLS.map((skill, i) => (
-              <span key={i} className="marquee-item">
+            {[...SKILLS, ...SKILLS].map((skill, i) => (
+              <span key={`${skill}-${i}`} className="marquee-item">
                 <span className="marquee-dot" />
                 {skill}
               </span>

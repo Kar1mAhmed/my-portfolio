@@ -155,7 +155,7 @@ body {
   display: flex;
   gap: 2.5rem;
   white-space: nowrap;
-  animation: marquee 28s linear infinite;
+  animation: marquee 12s linear infinite;
 }
 
 .marquee-inner:hover { animation-play-state: paused; }
