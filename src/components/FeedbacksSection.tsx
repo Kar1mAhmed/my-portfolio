@@ -19,9 +19,11 @@ export default function FeedbacksSection({ feedbacks }: FeedbacksSectionProps) {
       if (!setRef.current || !trackRef.current || !innerRef.current) return;
       const setWidth = setRef.current.scrollWidth;
       const trackWidth = trackRef.current.clientWidth;
-      const copiesPerLoop = Math.max(1, Math.ceil(trackWidth / setWidth));
-      innerRef.current.style.setProperty("--marquee-shift", `${copiesPerLoop * setWidth}px`);
-      setCopies(copiesPerLoop + 1);
+      const copiesNeeded = Math.max(1, Math.ceil(trackWidth / setWidth));
+      // Shift by exactly one set width so the loop is seamless when it resets
+      innerRef.current.style.setProperty("--marquee-shift", `${setWidth}px`);
+      innerRef.current.style.setProperty("--marquee-duration", `${setWidth / 60}s`);
+      setCopies(copiesNeeded + 1);
       setReady(true);
     };
 
@@ -39,15 +41,6 @@ export default function FeedbacksSection({ feedbacks }: FeedbacksSectionProps) {
       <div className="feedback-quote">“{feedback.feedback}”</div>
 
       <div className="feedback-footer">
-        <div className="feedback-avatar">
-          {feedback.clientImageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={feedback.clientImageUrl} alt={feedback.clientName} />
-          ) : (
-            <span>{feedback.clientName.charAt(0)}</span>
-          )}
-        </div>
-
         <div className="feedback-meta">
           <div className="feedback-client">{feedback.clientName}</div>
           {feedback.clientRole && <div className="feedback-role">{feedback.clientRole}</div>}

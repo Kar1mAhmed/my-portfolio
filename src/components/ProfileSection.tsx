@@ -10,10 +10,9 @@ interface ProfileSectionProps {
 }
 
 const SKILLS = [
-  "Next.js", "React", "TypeScript", "Node.js", "Cloudflare Workers",
-  "PostgreSQL", "Tailwind CSS", "REST APIs", "WebSockets", "CI/CD",
-  "Conversion UX", "Speed Optimization", "SaaS",
-  "Python", "Django", "Celery", "Redis", "SQL", "KV", "S3", "R2", "Docker",
+  "Next.js", "React", "TypeScript", "Node.js",
+  "PostgreSQL", "Tailwind CSS", "REST APIs", "WebSockets",
+  "Python", "Django", "Redis", "SQL", "KV", "S3", "R2", "Docker",
 ];
 
 const MARQUEE_COPIES = 6;
@@ -32,10 +31,9 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
       if (!setEl || !trackEl || !innerEl) return;
 
       const setWidth = setEl.scrollWidth;
-      const trackWidth = trackEl.clientWidth;
-      const copiesPerLoop = Math.max(1, Math.ceil(trackWidth / setWidth));
-      // +1px avoids any sub-pixel seam where the loop meets itself
-      innerEl.style.setProperty("--marquee-shift", `${copiesPerLoop * setWidth + 1}px`);
+      // Shift by exactly one set width so the loop is seamless when it resets
+      innerEl.style.setProperty("--marquee-shift", `${setWidth}px`);
+      innerEl.style.setProperty("--marquee-duration", `${setWidth / 90}s`);
       setReady(true);
     };
 

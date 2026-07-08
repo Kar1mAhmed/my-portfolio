@@ -23,6 +23,10 @@ export default async function Home() {
       <Reveal id="work">
         <ProjectGrid projects={projects} />
       </Reveal>
+      <div className="divider" />
+      <Reveal id="experience">
+        <WorkExperience />
+      </Reveal>
       {feedbacks.length > 0 && (
         <>
           <div className="divider" />
@@ -31,10 +35,6 @@ export default async function Home() {
           </Reveal>
         </>
       )}
-      <div className="divider" />
-      <Reveal id="experience">
-        <WorkExperience />
-      </Reveal>
       <div className="divider" />
       <Reveal id="education">
         <EducationSection highlights={educationHighlights} />

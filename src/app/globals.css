@@ -428,7 +428,7 @@ body {
   white-space: nowrap;
   width: max-content;
   will-change: transform;
-  animation: marquee 40s linear infinite;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
 }
 
 .marquee-inner:hover { animation-play-state: paused; }
@@ -1190,7 +1190,7 @@ body {
   gap: 1.5rem;
   width: max-content;
   will-change: transform;
-  animation: feedback-marquee 50s linear infinite;
+  animation: feedback-marquee var(--marquee-duration, 50s) linear infinite;
 }
 
 .feedback-inner:hover {

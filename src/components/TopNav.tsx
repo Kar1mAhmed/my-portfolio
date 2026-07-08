@@ -22,7 +22,7 @@ export default function TopNav() {
   }, []);
 
   useEffect(() => {
-    // Scrollspy: highlight nav link for section currently in view
+    // Scrollspy: highlight the section whose top is nearest the active marker
     const ids = LINKS.map((l) => l.href.slice(1));
     const sections = ids
       .map((id) => document.getElementById(id))
@@ -30,24 +30,31 @@ export default function TopNav() {
 
     if (sections.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) {
-          setActiveHash(`#${visible[0].target.id}`);
+    const markerRatio = 0.25;
+    const update = () => {
+      const marker = window.scrollY + window.innerHeight * markerRatio;
+      let current = "";
+      for (const section of sections) {
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        if (top <= marker) {
+          current = `#${section.id}`;
         }
-      },
-      { threshold: [0.2, 0.4, 0.6], rootMargin: "-30% 0px -50% 0px" }
-    );
+      }
+      setActiveHash(current);
+    };
 
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   const closeAndGo = (href: string) => {
     setOpen(false);
+    setActiveHash(href);
     // Give the mobile menu time to unmount before scrolling
     requestAnimationFrame(() => {
       const el = document.querySelector(href);
