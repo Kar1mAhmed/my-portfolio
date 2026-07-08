@@ -42,7 +42,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       <div className="modal-box">
 
         {/* Sticky header */}
-        <div style={{
+        <div className="modal-header" style={{
           position: "sticky", top: 0, zIndex: 1,
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "1rem 1.25rem",
@@ -86,7 +86,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
           {/* Meta grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+          <div className="modal-meta">
             {[
               { label: "Role",      value: project.role },
               { label: "Dev Time",  value: project.devTime },
@@ -144,7 +144,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           )}
 
           {/* Actions */}
-          <div style={{ display: "flex", gap: "0.625rem", paddingTop: "0.5rem", borderTop: "1px solid var(--border)" }}>
+          <div className="modal-actions">
             {project.liveUrl && (
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-primary">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

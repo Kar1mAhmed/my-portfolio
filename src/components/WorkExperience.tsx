@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 const EXPERIENCES = [
   {
     title: "Freelance Full-Stack Developer",
@@ -36,6 +40,12 @@ const EXPERIENCES = [
 ];
 
 export default function WorkExperience() {
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+
+  const toggle = (idx: number) => {
+    setExpanded((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
   return (
     <section className="work-section">
       <div className="section-header">
@@ -44,7 +54,7 @@ export default function WorkExperience() {
       </div>
 
       <div className="work-timeline">
-        {EXPERIENCES.map((exp) => (
+        {EXPERIENCES.map((exp, idx) => (
           <div key={exp.title} className="work-card">
             <div className="work-marker" aria-hidden>
               <svg
@@ -98,11 +108,35 @@ export default function WorkExperience() {
                 </div>
               )}
 
-              <ul className="work-list">
-                {exp.bullets.map((bullet, idx) => (
-                  <li key={idx}>{bullet}</li>
+              <ul className={`work-list${expanded[idx] ? " expanded" : ""}`}>
+                {exp.bullets.map((bullet, bIdx) => (
+                  <li key={bIdx}>{bullet}</li>
                 ))}
               </ul>
+              {exp.bullets.length > 2 && (
+                <button
+                  type="button"
+                  className="work-toggle"
+                  onClick={() => toggle(idx)}
+                  aria-expanded={expanded[idx] || false}
+                >
+                  {expanded[idx] ? (
+                    <>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="18 15 12 9 6 15" />
+                      </svg>
+                      Show less
+                    </>
+                  ) : (
+                    <>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                      Show more
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         ))}
