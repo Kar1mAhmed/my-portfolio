@@ -4,6 +4,7 @@ import ProjectGrid from "@/components/ProjectGrid";
 import FeedbacksSection from "@/components/FeedbacksSection";
 import WorkExperience from "@/components/WorkExperience";
 import EducationSection from "@/components/EducationSection";
+import Reveal from "@/components/Reveal";
 
 export default async function Home() {
   const [profile, projects, feedbacks, educationHighlights] = await Promise.all([
@@ -15,19 +16,29 @@ export default async function Home() {
 
   return (
     <div className="page-wrap">
-      <ProfileSection profile={profile} />
+      <div id="home">
+        <ProfileSection profile={profile} />
+      </div>
       <div className="divider" />
-      <ProjectGrid projects={projects} />
+      <Reveal id="work">
+        <ProjectGrid projects={projects} />
+      </Reveal>
       {feedbacks.length > 0 && (
         <>
           <div className="divider" />
-          <FeedbacksSection feedbacks={feedbacks} />
+          <Reveal id="feedbacks">
+            <FeedbacksSection feedbacks={feedbacks} />
+          </Reveal>
         </>
       )}
       <div className="divider" />
-      <WorkExperience />
+      <Reveal id="experience">
+        <WorkExperience />
+      </Reveal>
       <div className="divider" />
-      <EducationSection highlights={educationHighlights} />
+      <Reveal id="education">
+        <EducationSection highlights={educationHighlights} />
+      </Reveal>
     </div>
   );
 }
