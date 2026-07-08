@@ -1,16 +1,19 @@
-import type { EducationHighlight } from "@/types/project";
+const BOOKS = [
+  { title: "Grokking Algorithms", author: "Aditya Y. Bhargava" },
+  { title: "The Object-Oriented Thought Process", author: "Matt Weisfeld" },
+  { title: "Head First Design Patterns", author: "Eric Freeman & Elisabeth Robson" },
+  { title: "Operating Systems: Three Easy Pieces", author: "Remzi & Andrea Arpaci-Dusseau" },
+  { title: "CMU Database Systems", author: "Carnegie Mellon" },
+  { title: "Designing Data-Intensive Applications", author: "Martin Kleppmann" },
+  { title: "Clean Code", author: "Robert C. Martin" },
+  { title: "The Pragmatic Programmer", author: "Andrew Hunt & David Thomas" },
+  { title: "Refactoring", author: "Martin Fowler" },
+  { title: "System Design Interview", author: "Alex Xu" },
+  { title: "Computer Networking: A Top-Down Approach", author: "Kurose & Ross" },
+  { title: "Docker Deep Dive", author: "Nigel Poulton" },
+];
 
-interface EducationSectionProps {
-  highlights: EducationHighlight[];
-}
-
-const TYPE_LABELS: Record<EducationHighlight["type"], string> = {
-  course: "Course",
-  book: "Book",
-  certificate: "Certificate",
-};
-
-export default function EducationSection({ highlights }: EducationSectionProps) {
+export default function EducationSection() {
   return (
     <section className="education-section">
       <div className="section-header">
@@ -39,37 +42,20 @@ export default function EducationSection({ highlights }: EducationSectionProps) 
         </div>
       </div>
 
-      {/* Dynamic highlights */}
-      {highlights.length > 0 && (
-        <div className="education-highlights">
-          <h4 className="education-highlights-title">Courses, Books &amp; Certificates</h4>
-          <div className="education-highlights-grid">
-            {highlights.map((highlight) => (
-              <div key={highlight.id} className="education-highlight-card">
-                <div className="education-highlight-top">
-                  <span className={`badge badge-${highlight.type}`}>{TYPE_LABELS[highlight.type]}</span>
-                  {highlight.year && <span className="education-highlight-year">{highlight.year}</span>}
-                </div>
-
-                {highlight.url ? (
-                  <a
-                    href={highlight.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="education-highlight-title"
-                  >
-                    {highlight.title}
-                  </a>
-                ) : (
-                  <span className="education-highlight-title">{highlight.title}</span>
-                )}
-
-                {highlight.subtitle && <span className="education-highlight-subtitle">{highlight.subtitle}</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Reading & Learning */}
+      <div className="education-reading-block">
+        <h4 className="education-highlights-title">Reading &amp; Always Learning</h4>
+        <p className="education-reading-body">
+          I learn by building, but I also learn by reading — a lot. My shelves (and tabs) are full of system design, databases, algorithms, backend patterns, networking, and developer craft. Books that shaped how I think include{" "}
+          {BOOKS.map((book, i) => (
+            <span key={book.title}>
+              <span className="education-reading-book">{book.title}</span> by {book.author}
+              {i === BOOKS.length - 1 ? "." : i === BOOKS.length - 2 ? ", and " : ", "}
+            </span>
+          ))}{" "}
+          On top of that, I have gone deep into Cloudflare Workers, Next.js, FastAPI, PostgreSQL, Redis, Docker, Stripe, and modern web architecture through docs, courses, and shipping real products.
+        </p>
+      </div>
     </section>
   );
 }

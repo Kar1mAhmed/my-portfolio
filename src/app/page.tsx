@@ -1,4 +1,4 @@
-import { getProfile, getProjects, getFeedbacks, getEducationHighlights } from "@/lib/kv";
+import { getProfile, getProjects, getFeedbacks } from "@/lib/kv";
 import ProfileSection from "@/components/ProfileSection";
 import ProjectGrid from "@/components/ProjectGrid";
 import FeedbacksSection from "@/components/FeedbacksSection";
@@ -7,11 +7,10 @@ import EducationSection from "@/components/EducationSection";
 import Reveal from "@/components/Reveal";
 
 export default async function Home() {
-  const [profile, projects, feedbacks, educationHighlights] = await Promise.all([
+  const [profile, projects, feedbacks] = await Promise.all([
     getProfile(),
     getProjects(),
     getFeedbacks(),
-    getEducationHighlights(),
   ]);
 
   return (
@@ -37,7 +36,7 @@ export default async function Home() {
       )}
       <div className="divider" />
       <Reveal id="education">
-        <EducationSection highlights={educationHighlights} />
+        <EducationSection />
       </Reveal>
     </div>
   );
