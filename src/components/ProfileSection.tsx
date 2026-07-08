@@ -64,16 +64,16 @@ export default function ProfileSection({ profile }: ProfileSectionProps) {
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
             <span style={{ fontSize: "0.9375rem", fontWeight: 500, color: "var(--blue-light)", letterSpacing: "-0.01em" }}>
               {profile.name} — 
-              Web Developer & Conversion Partner
+              Full Stack Developer
             </span>
           </div>
 
           {/* Statement */}
           <h1 className="statement" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>
-            I Build Websites That <br />
+            I Build Websites That<br />
             {" "}
-            <span className="statement-outline">Make </span>{" "}
-            <span className="statement-blue">Sales</span>{" "}
+            <span className="statement-outline">Scale & </span>{" "}
+            <span className="statement-blue">Make Sales</span>{" "}
           </h1>
 
           {/* Bio */}
