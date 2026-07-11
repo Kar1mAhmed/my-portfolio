@@ -39,6 +39,7 @@ export interface Profile {
   bio: string;
   location: string;
   email: string;
+  phone?: string;
   avatarUrl: string;
   resumeUrl: string;
   availabilityStatus: "open" | "busy" | "not-looking";
@@ -46,6 +47,5 @@ export interface Profile {
     linkedin?: string;
     github?: string;
     instagram?: string;
-    x?: string;
   };
 }

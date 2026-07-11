@@ -762,6 +762,16 @@ export default function AdminPage() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Phone Number</label>
+              <input
+                type="tel"
+                value={profile.phone || ""}
+                onChange={e => setProfile({ ...profile, phone: e.target.value })}
+                style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
               <label style={{ fontSize: "0.75rem", color: "var(--text-2)", fontFamily: "var(--font-geist-mono)" }}>Resume / CV URL</label>
               <input
                 type="text"
@@ -801,15 +811,6 @@ export default function AdminPage() {
                   type="text"
                   value={profile.socials.github || ""}
                   onChange={e => setProfile({ ...profile, socials: { ...profile.socials, github: e.target.value } })}
-                  style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
-                />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-3)", fontFamily: "var(--font-geist-mono)" }}>Twitter / X</label>
-                <input
-                  type="text"
-                  value={profile.socials.x || ""}
-                  onChange={e => setProfile({ ...profile, socials: { ...profile.socials, x: e.target.value } })}
                   style={{ background: "var(--bg-hover)", border: "1px solid var(--border)", borderRadius: "6px", padding: "0.625rem 0.875rem", fontSize: "0.875rem", color: "var(--text-1)", outline: "none" }}
                 />
               </div>

@@ -8,15 +8,15 @@ const MOCK_PROFILE: Profile = {
   jobTitle: "Build Websites That Make Sales",
   bio: "I've worked on 50+ websites — analyzing traffic, testing, and iterating until the numbers moved. Some hit thousands of daily visitors and hundreds of paying subscribers. I know what makes people buy. Not just making sites look good — making them work.",
   location: "Cairo, Egypt",
-  email: "hello@karimahmed.dev",
+  email: "karim.was.in@gmail.com",
+  phone: "+20 106 202 4268",
   avatarUrl: "/Images/My-Image.jpeg",
   resumeUrl: "/Karim Ahmed — CV.pdf",
   availabilityStatus: "open",
   socials: {
     linkedin: "https://linkedin.com/in/karimahmed",
     github: "https://github.com/Kar1mAhmed",
-    instagram: "https://instagram.com/karimahmed",
-    x: "https://x.com/karimahmed",
+    instagram: "https://instagram.com/kar1m.ahmed",
   },
 };
 
