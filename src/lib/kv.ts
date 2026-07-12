@@ -11,7 +11,7 @@ const MOCK_PROFILE: Profile = {
   email: "karim.was.in@gmail.com",
   phone: "+20 106 202 4268",
   avatarUrl: "/Images/My-Image.jpeg",
-  resumeUrl: "/Karim Ahmed — CV.pdf",
+  resumeUrl: "/Karim-Ahmed-CV.pdf",
   availabilityStatus: "open",
   socials: {
     linkedin: "https://linkedin.com/in/karimahmed",
